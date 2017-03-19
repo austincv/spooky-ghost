@@ -49,7 +49,7 @@ sudo apt-get install -y nodejs nodejs-legacy npm
 # Download and install ghost
 sudo apt-get install -y unzip
 sudo mkdir -p /var/www/
-sudo wget https://ghost.org/zip/ghost-latest.zip
+sudo wget -nv https://ghost.org/zip/ghost-latest.zip
 sudo unzip -d /var/www/ghost ghost-latest.zip
 sudo rm ghost-latest.zip
 
@@ -62,6 +62,30 @@ sudo adduser \
  --disabled-password \
  --gecos 'Ghost application server' ghost
 sudo chown -R ghost:ghost /var/www/ghost/
+
+# register and start ghost as a service at boot
+sudo echo "# Place in /etc/systemd/system/ghost.service
+[Unit]
+Description=Ghost blog
+After=network.target
+
+[Service]
+Type=simple
+PIDFile=/run/ghost.pid
+# This is the directory you installed Ghost to
+WorkingDirectory=/var/www/ghost/
+User=ghost
+Group=ghost
+ExecStart=/usr/bin/npm start --production
+ExecStop=/usr/bin/npm stop /var/www/ghost/
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target
+" > /etc/systemd/system/ghost.service
+sudo systemctl enable ghost.service
+sudo service ghost start
 
 echo 'Start : '${START_TIME}
 echo 'End   : '$(date)
