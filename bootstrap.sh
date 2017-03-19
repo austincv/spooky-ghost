@@ -39,7 +39,9 @@ echo "
     Updating system packages ...
 "
 sudo apt-get update
-sudo apt-get -y upgrade
+sudo DEBIAN_FRONTEND=noninteractive apt-get -y \
+ -o Dpkg::Options::="--force-confdef" \
+ -o Dpkg::Options::="--force-confold" dist-upgrade
 
 echo 'Start : '${START_TIME}
 echo 'End   : '$(date)
