@@ -56,5 +56,12 @@ sudo rm ghost-latest.zip
 cd /var/www/ghost
 sudo npm install --production
 
+# Create and run ghost using a ghost user
+sudo adduser \
+ --shell /bin/bash \
+ --disabled-password \
+ --gecos 'Ghost application server' ghost
+sudo chown -R ghost:ghost /var/www/ghost/
+
 echo 'Start : '${START_TIME}
 echo 'End   : '$(date)
