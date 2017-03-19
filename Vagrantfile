@@ -3,7 +3,9 @@
 
 Vagrant.configure(2) do |config|
   config.vm.box = "ubuntu/xenial64"
-  config.vm.provision :shell, path: "bootstrap.sh"
+  config.vm.provision :shell, path: "bootstrap.sh"#
+
+  config.vm.network :forwarded_port, host: 2000, guest: 80 # nginx
 
   config.vm.provider "virtualbox" do |vb|
     vb.name = "spooky-ghost"
