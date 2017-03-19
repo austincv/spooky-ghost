@@ -2,7 +2,7 @@
 
 # required memory in KB, if the vm memory is less than this then
 # the difference will be added as swap space.
-REQUIRED_MEMORY=1572864 # 1.5 GB
+REQUIRED_MEMORY=2097152 # 2 GB
 START_TIME=$(date)
 
 AVAILABLE_MEMORY=$(sudo cat /proc/meminfo | grep MemTotal: | awk '{print $2}')
@@ -42,6 +42,19 @@ sudo apt-get update
 sudo DEBIAN_FRONTEND=noninteractive apt-get -y \
  -o Dpkg::Options::="--force-confdef" \
  -o Dpkg::Options::="--force-confold" dist-upgrade
+
+# Install node and npm
+sudo apt-get install -y nodejs nodejs-legacy npm
+
+# Download and install ghost
+sudo apt-get install -y unzip
+sudo mkdir -p /var/www/
+sudo wget https://ghost.org/zip/ghost-latest.zip
+sudo unzip -d /var/www/ghost ghost-latest.zip
+sudo rm ghost-latest.zip
+
+cd /var/www/ghost
+sudo npm install --production
 
 echo 'Start : '${START_TIME}
 echo 'End   : '$(date)
