@@ -87,5 +87,38 @@ WantedBy=multi-user.target
 sudo systemctl enable ghost.service
 sudo service ghost start
 
+# install nginx
+sudo apt-get install -y nginx
+
+sudo rm /etc/nginx/sites-available/default
+sudo rm /etc/nginx/sites-enabled/default
+
+# create nginx proxy config
+# note that I have escaped $ in the string below so don't copy paste from this
+# if you are doing it manually
+sudo echo "
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server ipv6only=on;
+
+    server_name localhost;
+
+    root /usr/share/nginx/html;
+    index index.html index.htm;
+
+    client_max_body_size 100M;
+
+    location / {
+        proxy_pass http://localhost:2368;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header Host \$http_host;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_buffering off;
+    }
+}" > /etc/nginx/sites-available/ghost
+sudo ln -sf /etc/nginx/sites-available/ghost \
+            /etc/nginx/sites-enabled/ghost
+sudo service nginx restart
+
 echo 'Start : '${START_TIME}
 echo 'End   : '$(date)
